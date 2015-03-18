@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>Browse Eventbrite Categories</title>
+</head>
+<body>
+    <section class="flash-messages">
+
+    </section>
+    <section class="category-selectors-wrapper">
+        {% for %}
+            <select class="category-selector">
+                {% for cat in categories %}
+                    <option name="cat.id">{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        {% endfor %}
+    </section>
+    {% if events %}
+        <section class="events-wrapper">
+            <ul class="events-list">
+                {% for event in events %}
+                    <li>
+                        {% comment %}
+                            Need to add this part
+                        {% endcomment %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+</body>
+</html>
