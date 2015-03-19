@@ -1,0 +1,67 @@
+{% load util %}
+{% load staticfiles %}
+
+<html>
+<head>
+    <title>Browse Eventbrite Categories</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href="{% static 'css/style.css' %}"
+      rel="stylesheet" media="screen">
+</head>
+<body>
+    <section class="flash-messages col-md-8 col-md-offset-2">
+        {% for message in messages %}
+            <div {% if message.tags %} class="{{ message.tags }} alert-danger"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    </section>
+    <section class="category-selectors-wrapper col-md-8 col-md-offset-2 form-container">
+        <form method='get'>
+            {% for i in 3|range %}
+                <select class="category-selector selectpicker" name="cat">
+                    {% for cat in categories|dictsort:"name" %}
+                        <option value="{{ cat.id }}" {% if i < sel_cat|length and sel_cat|index:i == cat.id %} selected {% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            {% endfor %}
+            <input type="submit" class="submit-button btn btn-default" value="Search">
+        </form>
+    </section>
+    {% if events %}
+        <section class="events-wrapper panel col-md-8 col-md-offset-2">
+            <div class="panel-header">Events (Page {{ pagination.page_number }} of {{ pagination.page_count }})</div>
+            <ul class="events-list list-group">
+                {% for event in events %}
+                <a href="{{ event.url }}">
+                    <li class="list-group-item">
+                        {% if event.logo %}
+                            <img class="logo" src="{{ event.logo.url }}" />
+                        {% endif %}
+                        <span class="name">{{ event.name.text }}</span>
+                    </li>
+                </a>
+                {% endfor %}
+            </ul>
+            <nav>
+              <ul class="pagination">
+                {% if pagination.page_number|add:'-1' >= 1 %}
+                    <li>
+                      <a href="?{% url_replace request 'page' pagination.page_number|add:'-1' 'req_time' req_time %}" aria-label="Previous">
+                        <span aria-hidden="true">Previous</span>
+                      </a>
+                    </li>
+                {% endif %}
+                {% if pagination.page_number|add:'1' <= pagination.page_count %}
+                    <li>
+                      <a href="?{% url_replace request 'page' pagination.page_number|add:'1' 'req_time' req_time %}" aria-label="Next">
+                        <span aria-hidden="true">Next</span>
+                      </a>
+                    </li>
+                {% endif %}
+              </ul>
+            </nav>
+        </section>
+    {% endif %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>

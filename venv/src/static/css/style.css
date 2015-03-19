@@ -1,0 +1,25 @@
+.category-selectors-wrapper {
+    margin-bottom: 1em;
+    padding: 1em;
+}
+
+.category-selectors-wrapper .submit-button {
+    clear: both;
+    margin: 0.4em;
+}
+
+.events-wrapper li {
+    padding: 1em;
+    font-size: 1.3em;
+}
+
+.events-wrapper li img {
+    height: 2em;
+    margin-right: 1em;
+}
+
+.events-wrapper li span {
+    height: 2em;
+    line-height: 2em;
+    margin-right: 1em;
+}
