@@ -39,7 +39,6 @@ def request_json(url, opt):
     return r.json()
 
 def get_request_obj(opt):
-    print("GET REQ OBJ: ", opt)
     if opt.get('cached', False):
         return get_cached_requests()
     else:
@@ -64,7 +63,6 @@ class FailedApiRequest(Exception):
 
 #--- Specific Requests ---
 
-#TODO: Make it fetch all categories regardless of page size
 def fetch_categories(page_number=1, cached=False):
     trunc_url = config['categories_truncated_url']
     return fetch(trunc_url, {
@@ -86,8 +84,6 @@ def fetch_all_categories(cached=False):
             break
         page += 1
     return all_cat
-
-
 
 def fetch_events_by_category(categories, page_number=1, range_end_time=None):
     search_url = config['event_search_truncated_url']

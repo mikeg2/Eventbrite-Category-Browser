@@ -4,17 +4,16 @@
 <html>
 <head>
     <title>Browse Eventbrite Categories</title>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link href="{% static 'css/style.css' %}"
       rel="stylesheet" media="screen">
 </head>
 <body>
-    <section class="flash-messages col-md-8 col-md-offset-2">
+    <section class="flash-messages">
         {% for message in messages %}
             <div {% if message.tags %} class="{{ message.tags }} alert-danger"{% endif %}>{{ message }}</div>
         {% endfor %}
     </section>
-    <section class="category-selectors-wrapper col-md-8 col-md-offset-2 form-container">
+    <section class="category-selectors-wrapper form-container">
         <form method='get'>
             {% for i in 3|range %}
                 <select class="category-selector selectpicker" name="cat">
@@ -27,7 +26,7 @@
         </form>
     </section>
     {% if events %}
-        <section class="events-wrapper panel col-md-8 col-md-offset-2">
+        <section class="events-wrapper panel">
             <div class="panel-header">Events (Page {{ pagination.page_number }} of {{ pagination.page_count }})</div>
             <ul class="events-list list-group">
                 {% for event in events %}
