@@ -8,12 +8,12 @@ def get_range(count):
 
 @register.simple_tag
 def url_replace(request, *args):
-    dict_ = request.GET.copy()
+    editable_get = request.GET.copy()
     for i in xrange(0, len(args), 2):
         field = args[i]
         value = args[i+1]
-        dict_[field] = value
-    return dict_.urlencode()
+        editable_get[field] = value
+    return editable_get.urlencode()
 
 @register.filter
 def index(array, index):

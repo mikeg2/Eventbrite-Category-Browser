@@ -1,20 +1,19 @@
 {% load util %}
 {% load staticfiles %}
+{% load compress %}
 
 <html>
 <head>
     <title>Browse Eventbrite Categories</title>
-    <link href="{% static 'css/style.css' %}"
+    {% compress css %}
+    <link href="{% static 'css/categories_style.css' %}"
       rel="stylesheet" media="screen">
+    {% endcompress %}
 </head>
 <body>
-    <section class="flash-messages">
-        {% for message in messages %}
-            <div {% if message.tags %} class="{{ message.tags }} alert-danger"{% endif %}>{{ message }}</div>
-        {% endfor %}
-    </section>
-    <section class="category-selectors-wrapper form-container">
+    <section class="browse-form">
         <form method='get'>
+            <div class="category-selector-wrapper">
             {% for i in 3|range %}
                 <select class="category-selector selectpicker" name="cat">
                     {% for cat in categories|dictsort:"name" %}
@@ -22,12 +21,18 @@
                     {% endfor %}
                 </select>
             {% endfor %}
+            </div>
             <input type="submit" class="submit-button btn btn-default" value="Search">
         </form>
     </section>
+    <section class="flash-messages">
+        {% for message in messages %}
+            <div {% if message.tags %} class="{{ message.tags }} alert-danger"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    </section>
     {% if events %}
         <section class="events-wrapper panel">
-            <div class="panel-header">Events (Page {{ pagination.page_number }} of {{ pagination.page_count }})</div>
+            <div class="events-header">Events (Page {{ pagination.page_number }} of {{ pagination.page_count }})</div>
             <ul class="events-list list-group">
                 {% for event in events %}
                 <a href="{{ event.url }}">
@@ -43,24 +48,23 @@
             <nav>
               <ul class="pagination">
                 {% if pagination.page_number|add:'-1' >= 1 %}
-                    <li>
-                      <a href="?{% url_replace request 'page' pagination.page_number|add:'-1' 'req_time' req_time %}" aria-label="Previous">
-                        <span aria-hidden="true">Previous</span>
-                      </a>
-                    </li>
+                    <a href="?{% url_replace request 'page' pagination.page_number|add:'-1' 'req_time' req_time %}" aria-label="Previous">
+                        <li>
+                            <span aria-hidden="true">Previous</span>
+                        </li>
+                    </a>
                 {% endif %}
                 {% if pagination.page_number|add:'1' <= pagination.page_count %}
-                    <li>
-                      <a href="?{% url_replace request 'page' pagination.page_number|add:'1' 'req_time' req_time %}" aria-label="Next">
-                        <span aria-hidden="true">Next</span>
-                      </a>
-                    </li>
+                    <a href="?{% url_replace request 'page' pagination.page_number|add:'1' 'req_time' req_time %}" aria-label="Next">
+                        <li>
+                            <span aria-hidden="true">Next</span>
+                        </li>
+                    </a>
+
                 {% endif %}
               </ul>
             </nav>
         </section>
     {% endif %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </body>
 </html>

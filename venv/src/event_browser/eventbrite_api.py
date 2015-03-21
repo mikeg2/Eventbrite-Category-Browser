@@ -30,15 +30,16 @@ def add_params(url, params):
     url_parts[4] = urllib.urlencode(query)
     return urlparse.urlunparse(url_parts)
 
-def request_json(url, opt):
+def request_json(url, opt={}):
     request_obj = get_request_obj(opt)
-    r = request_obj.get(url, params=opt.get('params', {}))
-    if r.status_code != 200: # check if this should be more inclusive
-        print("API CODE: ", r.status_code, " URL: ", url, "PARAMS: ", params, " OTHER: ", r.json())
-        raise FailedApiRequest('Failed Eventbrite Api Request', url, r.status_code)
-    return r.json()
+    params = opt.get('params', {})
+    result = request_obj.get(url, params=params)
+    if result.status_code != 200: # check if this should be more inclusive
+        print("API CODE: ", result.status_code, " URL: ", url, "PARAMS: ", params, " OTHER: ", result.json())
+        raise FailedApiRequest('Failed Eventbrite Api Request', url, result.status_code)
+    return result.json()
 
-def get_request_obj(opt):
+def get_request_obj(opt={}):
     if opt.get('cached', False):
         return get_cached_requests()
     else:
@@ -53,7 +54,6 @@ def get_cached_requests():
 get_cached_requests.cached_sess = None
     
 
-#TODO: Add flash for errors
 class FailedApiRequest(Exception):
     def __init__(self, message, url, status_code):
         super(FailedApiRequest, self).__init__(message)
@@ -72,6 +72,10 @@ def fetch_categories(page_number=1, cached=False):
             'cached': cached
         })
 
+# Though all category results fit in one request page as of 3/21/2015,
+# the code should work even if category results are many pages long
+# 
+# WARNING: Untested for results more than one page long
 def fetch_all_categories(cached=False):
     all_cat = []
     page = 1
@@ -95,11 +99,3 @@ def fetch_events_by_category(categories, page_number=1, range_end_time=None):
             'date_modified.range_end': range_end_time
         }
     })
-
-
-# -- util --
-
-def create_fetch_shortcut(trunc_url):
-    def shortcut():
-        fetch(trunc_url)
-    return shortcut
