@@ -40,7 +40,7 @@ class TestFetchFunctions(unittest.TestCase):
             assert cat['short_name']
             assert cat['short_name_localized']
 
-    def assert_pagination(data, pagination):
+    def assert_pagination(self, data, pagination):
         assert len(data) <= pagination['page_size']
         assert len(data) > 0
 

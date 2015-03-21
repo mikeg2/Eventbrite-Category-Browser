@@ -18,7 +18,9 @@ def category(request):
     context_for_eventlist_search(request, context)
     return render(request, 'browse_categories.html', context)
 
-def context_for_category_list(request, context = {}):
+def context_for_category_list(request, context=None):
+    if context is None:
+        context = {}
     try:
         categories = fetch_all_categories(True)
         context['categories'] = categories
@@ -26,13 +28,17 @@ def context_for_category_list(request, context = {}):
         messages.add_message(request, messages.ERROR, config['eventbrite_api_error_message'])
     return context
 
-def context_for_eventlist_search(request, context = {}):
+def context_for_eventlist_search(request, context=None):
+    if context is None:
+        context = {}
     browse_categories = context['sel_cat'] = request.GET.getlist('cat')
     if browse_categories:
         context_for_eventlist_results(request, browse_categories, context)
     return context
 
-def context_for_eventlist_results(request, categories, context={}):
+def context_for_eventlist_results(request, categories, context=None):
+    if context is None:
+        context = {}
     page_number = request.GET.get('page', 1)
     initial_request_time = request.GET.get('req_time') or current_utc_string() # Used to ensure pagination results are stable
     context['req_time'] = initial_request_time
