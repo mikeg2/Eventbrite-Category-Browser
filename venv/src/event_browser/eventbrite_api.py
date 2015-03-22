@@ -23,6 +23,7 @@ def full_url(truncated_url, inj=config):
     result_full_url = add_params(complete_url, {'token': token})
     return result_full_url
 
+# Adapted from example here: http://stackoverflow.com/questions/2506379/add-params-to-given-url-in-python
 def add_params(url, params):
     url_parts = list(urlparse.urlparse(url))
     query = dict(urlparse.parse_qsl(url_parts[4]))

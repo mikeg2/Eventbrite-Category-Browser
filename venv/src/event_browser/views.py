@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from eventbrite_api import fetch_events_by_category, fetch_all_categories, FailedApiRequest
 from eventbrite_app_1.settings import BASE_DIR
 from django.contrib.messages import constants as messages
@@ -14,18 +13,20 @@ def category(request):
     context = {
         'request': request,  # Used for pagination
     }
-    context_for_category_list(request, context)
-    context_for_eventlist_search(request, context)
-    return render(request, 'browse_categories.html', context)
+    TEMPLATE_URL = 'browse_categories.html'
+    try:
+        context_for_category_list(request, context)
+        context_for_eventlist_search(request, context)
+    except FailedApiRequest:
+        messages.add_message(request, messages.ERROR, config['eventbrite_api_error_message'])
+        return render(request, TEMPLATE_URL, context, status=500)
+    return render(request, TEMPLATE_URL, context)
 
 def context_for_category_list(request, context=None):
     if context is None:
         context = {}
-    try:
-        categories = fetch_all_categories(True)
-        context['categories'] = categories
-    except FailedApiRequest:
-        messages.add_message(request, messages.ERROR, config['eventbrite_api_error_message'])
+    categories = fetch_all_categories(True)
+    context['categories'] = categories
     return context
 
 def context_for_eventlist_search(request, context=None):
@@ -41,14 +42,11 @@ def context_for_eventlist_results(request, categories, context=None):
         context = {}
     page_number = request.GET.get('page', 1)
     initial_request_time = request.GET.get('req_time') or current_utc_string() # Used to ensure pagination results are stable
+    fetched_events_data = fetch_events_by_category(
+        categories, page_number, initial_request_time)
     context['req_time'] = initial_request_time
-    try:
-        fetched_events_data = fetch_events_by_category(
-            categories, page_number, initial_request_time)
-        context['events'] = fetched_events_data['events']
-        context['pagination'] = fetched_events_data['pagination']
-    except FailedApiRequest:
-        messages.add_message(request, messages.ERROR, config['eventbrite_api_error_message'])
+    context['events'] = fetched_events_data['events']
+    context['pagination'] = fetched_events_data['pagination']
     return context
 
 def current_utc_string():

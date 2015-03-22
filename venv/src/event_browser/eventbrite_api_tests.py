@@ -76,7 +76,6 @@ class TestFetchFunctions(unittest.TestCase):
             (('', {'var 1': 1}), '?var+1=1'),
         ]
         for case, expected in cases_and_results:
-            print(case, expected)
             assert expected == add_params(case[0], case[1])
 
     def test_request_json_no_params(self):
