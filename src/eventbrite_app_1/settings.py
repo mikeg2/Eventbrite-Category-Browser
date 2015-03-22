@@ -82,8 +82,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-from dj_static import Cling
-application = Cling(get_wsgi_application())
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
