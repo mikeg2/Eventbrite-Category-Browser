@@ -12,14 +12,14 @@ Since categories change so rarely, it would make sense to store the categories i
 Some CSS3 rules were used for styling, but the pages should still work with most browsers.
 
 ## Debug vs. Production
-WhiteNoise is used to serve static files on Heroku. Django sends the static files to the `staticfile` directory. All CSS files are compressed.
+Static files are served using dj-static. Django sends the static files to the `staticfile` directory. All CSS files are compressed.
 
 https://devcenter.heroku.com/articles/django-assets
 
 [double check compress on upload]
 
 ## Technology Used
-- Django
+- Django (+ extensions)
 - Requests
 - ConfigObj
 - CacheControl
