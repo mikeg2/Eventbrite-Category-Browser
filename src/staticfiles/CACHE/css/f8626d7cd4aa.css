@@ -1,0 +1,46 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.browse-form {
+    margin-bottom: 1em;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    background-color: lightgray;
+    position: fixed;
+    width: 100%;
+    text-align: center;
+}
+
+.category-selector-wrapper {
+    margin: 1em;
+}
+
+.category-selector-wrapper .category-selector {
+    font-size: 1em;    
+}
+
+.browse-form .submit-button {
+    clear: both;
+    margin: 0.4em;
+    font-size: 1em;
+}
+
+.events-wrapper li {
+    padding: 1em;
+    font-size: 1.3em;
+}
+
+.events-wrapper li img {
+    height: 2em;
+    margin-right: 1em;
+}
+
+.events-wrapper li span {
+    height: 2em;
+    line-height: 2em;
+    margin-right: 1em;
+}
