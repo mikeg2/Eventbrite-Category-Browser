@@ -4,6 +4,7 @@ import urlparse
 import urllib
 from eventbrite_app_1.settings import BASE_DIR
 from configobj import ConfigObj
+from django.core.cache import cache
 import os
 
 BROWSER_VIEW_CONFIG_URL = os.path.join(BASE_DIR, 'event_browser/event_browser.cfg')
@@ -11,9 +12,9 @@ config = ConfigObj(BROWSER_VIEW_CONFIG_URL)['eventbrite']
 
 #--- General Fetching ---
 
-def fetch(truncated_url, opt):
+def fetch(truncated_url, opt={}):
     api_full_url = full_url(truncated_url)
-    return request_json(api_full_url, opt)
+    return get_json(api_full_url, opt)
 
 # inj parameter added to allow for testing
 def full_url(truncated_url, inj=config):
@@ -31,27 +32,28 @@ def add_params(url, params):
     url_parts[4] = urllib.urlencode(query)
     return urlparse.urlunparse(url_parts)
 
+def get_json(api_full_url, opt):
+    perm_cache = opt.get('perm_cache', False)
+    cache_key = get_request_key(api_full_url)
+    if perm_cache:
+        result = cache.get(cache_key)
+        if result:
+            return result
+    result = request_json(api_full_url, opt)
+    if perm_cache:
+        cache.set(cache_key, result)
+    return result
+
+# Not intelligent enough to recognize for get params in different orders
+def get_request_key(url):
+    return 'get ' + url
+
 def request_json(url, opt={}):
-    request_obj = get_request_obj(opt)
     params = opt.get('params', {})
-    result = request_obj.get(url, params=params)
+    result = requests.get(url, params=params)
     if is_error_code(result.status_code):
         raise FailedApiRequest('Eventbrite API returned error', url, result.status_code)
     return result.json()
-
-def get_request_obj(opt={}):
-    if opt.get('cached', False):
-        return get_cached_requests()
-    else:
-        return requests
-
-def get_cached_requests():
-    if get_cached_requests.cached_sess is None:
-        sess = requests.session()
-        cached_sess = CacheControl(sess)
-        get_cached_requests.cached_sess = cached_sess
-    return get_cached_requests.cached_sess
-get_cached_requests.cached_sess = None
 
 def is_error_code(status_code):
     return int(status_code) >= 400
@@ -71,7 +73,7 @@ def fetch_categories(page_number=1, cached=False):
             'params': {
                 'page': page_number
             },
-            'cached': cached
+            'perm_cache': cached
         })
 
 # Though all category results fit in one request page as of 3/21/2015,

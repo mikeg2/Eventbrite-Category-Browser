@@ -102,3 +102,43 @@ COMPRESS_CSS_FILTERS = ['compressor.filters.css_default.CssAbsoluteFilter',  'co
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'event_browser/templates/'),
 )
+
+# Cache
+
+CACHES_MEM = {
+    'default': {
+        'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+        'BINARY': True,
+        'OPTIONS': {
+            'no_block': True,
+            'tcp_nodelay': True,
+            'tcp_keepalive': True,
+            'remove_failed': 4,
+            'retry_timeout': 2,
+            'dead_timeout': 10,
+            '_poll_timeout': 2000
+        }
+    }
+}
+
+CACHES_DEFAULT = {
+  'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': None,  # In LocMemCache None means infinite timeout
+        'OPTIONS': {
+            'MAX_ENTRIES': 10e9
+        }
+    }
+}
+
+# If mem cache isn't set up, falls back on default settings
+def select_cache():
+    try:
+        os.environ['MEMCACHE_SERVERS'] = os.environ['MEMCACHIER_SERVERS'].replace(',', ';')
+        os.environ['MEMCACHE_USERNAME'] = os.environ['MEMCACHIER_USERNAME']
+        os.environ['MEMCACHE_PASSWORD'] = os.environ['MEMCACHIER_PASSWORD']
+        return CACHES_MEM
+    except:
+        return CACHES_DEFAULT
+
+CACHES = select_cache()
