@@ -35,9 +35,8 @@ def request_json(url, opt={}):
     request_obj = get_request_obj(opt)
     params = opt.get('params', {})
     result = request_obj.get(url, params=params)
-    if result.status_code != 200: # check if this should be more inclusive
-        print("API CODE: ", result.status_code, " URL: ", url, "PARAMS: ", params, " OTHER: ", result.json())
-        raise FailedApiRequest('Failed Eventbrite Api Request', url, result.status_code)
+    if is_error_code(result.status_code):
+        raise FailedApiRequest('Eventbrite API returned error', url, result.status_code)
     return result.json()
 
 def get_request_obj(opt={}):
@@ -53,7 +52,9 @@ def get_cached_requests():
         get_cached_requests.cached_sess = cached_sess
     return get_cached_requests.cached_sess
 get_cached_requests.cached_sess = None
-    
+
+def is_error_code(status_code):
+    return int(status_code) >= 400
 
 class FailedApiRequest(Exception):
     def __init__(self, message, url, status_code):
