@@ -1,5 +1,4 @@
 import requests
-from cachecontrol import CacheControl
 import urlparse
 import urllib
 from eventbrite_app_1.settings import BASE_DIR
@@ -7,8 +6,8 @@ from configobj import ConfigObj
 from django.core.cache import cache
 import os
 
-BROWSER_VIEW_CONFIG_URL = os.path.join(BASE_DIR, 'event_browser/event_browser.cfg')
-config = ConfigObj(BROWSER_VIEW_CONFIG_URL)['eventbrite']
+EVENTBRITE_API_CONFIG_URL = os.path.join(BASE_DIR, 'event_browser/event_browser.cfg')
+config = ConfigObj(EVENTBRITE_API_CONFIG_URL)['eventbrite']
 
 #--- General Fetching ---
 
@@ -73,7 +72,7 @@ def fetch_categories(page_number=1, cached=False):
             'params': {
                 'page': page_number
             },
-            'perm_cache': cached
+            'perm_cache': cached # cache perminently in memory
         })
 
 # Though all category results fit in one request page as of 3/21/2015,
@@ -100,6 +99,6 @@ def fetch_events_by_category(categories, page_number=1, range_end_time=None):
         'params': {
             'categories': ','.join(str_categories),
             'page': page_number,
-            'date_modified.range_end': range_end_time
+            'date_modified.range_end': range_end_time # used for pagination
         }
     })

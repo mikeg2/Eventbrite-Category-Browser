@@ -1,11 +1,5 @@
 import unittest
 from eventbrite_api import *
-import datetime
-import requests
-from cachecontrol import CacheControl
-
-# Could try to decouple eventbrite_api.py from the actual request object, therefor making unit tests independent of the API
-# However, that also reduces the tests' usefullness (though also reduces the time they take)
 
 class TestFetchFunctions(unittest.TestCase):
 
@@ -17,7 +11,7 @@ class TestFetchFunctions(unittest.TestCase):
         categories_data = fetch_categories()
         categories = categories_data['categories']
         pagination = categories_data['pagination']
-        assert pagination['page_number'] == 1
+        self.assertEqual(pagination['page_number'], 1)
         self.assert_pagination(categories, pagination)
         self.assert_categories(categories)
 
@@ -33,25 +27,16 @@ class TestFetchFunctions(unittest.TestCase):
 
     def assert_categories(self, categories):
         for cat in categories:
-            assert cat['id']
-            assert cat['resource_uri']
-            assert cat['name']
-            assert cat['name_localized']
-            assert cat['short_name']
-            assert cat['short_name_localized']
+            self.assertIsNotNone(cat['id'])
+            self.assertIsNotNone(cat['resource_uri'])
+            self.assertIsNotNone(cat['name'])
+            self.assertIsNotNone(cat['name_localized'])
+            self.assertIsNotNone(cat['short_name'])
+            self.assertIsNotNone(cat['short_name_localized'])
 
     def assert_pagination(self, data, pagination):
-        assert len(data) <= pagination['page_size']
-        assert len(data) > 0
-
-    def test_get_request_obj(self):
-        assert get_request_obj() is requests
-        assert get_request_obj({'cached': False}) is requests
-        assert type(get_request_obj({'cached': True})) is requests.sessions.Session
-
-    def test_get_cached_requests(self):
-        assert type(get_cached_requests()) is requests.sessions.Session
-        assert get_cached_requests() is get_cached_requests()
+        self.assertLessEqual(len(data), pagination['page_size'])
+        self.assertGreater(len(data), 0)
 
     def test_full_url(self):
         inj = {
@@ -66,7 +51,7 @@ class TestFetchFunctions(unittest.TestCase):
             ('/event/search/', 'https://test.com/event/search/?token=1'),
         ]
         for case, expected in cases_and_results:
-            assert expected == full_url(case, inj)
+            self.assertEqual(expected, full_url(case, inj))
 
     def test_add_params(self):
         cases_and_results = [
@@ -76,12 +61,12 @@ class TestFetchFunctions(unittest.TestCase):
             (('', {'var 1': 1}), '?var+1=1'),
         ]
         for case, expected in cases_and_results:
-            assert expected == add_params(case[0], case[1])
+            self.assertEqual(expected, add_params(case[0], case[1]))
 
     def test_request_json_no_params(self):
         json_test_url = 'http://ip.jsontest.com/'
         result = request_json(json_test_url)
-        assert result['ip']
+        self.assertIsNotNone(result['ip'])
 
     #TODO: need to test request_json with params
 
@@ -90,9 +75,9 @@ class TestFetchFunctions(unittest.TestCase):
         data = fetch_events_by_category(test_cat)
         events = data['events']
         pagination = data['pagination']
-        assert len(events) > 0 # reasonable assumption
+        self.assertGreater(len(events), 0) # reasonable assumption
         self.assert_pagination(events, pagination)
         for e in events: # tests the fields that the rest of the program expects to be filled out
-            assert e['name']
-            assert e['url']
-            assert e['category_id'] in test_cat
+            self.assertIsNotNone(e['name'])
+            self.assertIsNotNone(e['url'])
+            self.assertIn(e['category_id'], test_cat)
