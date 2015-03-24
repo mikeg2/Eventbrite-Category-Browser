@@ -2,7 +2,7 @@
 Allows users to browse Eventbrite events by category. All data is fetched from Eventbrite's API. No data is stored by the program itself, except in the in-memory cache.
 
 ## Caching
-Requests to Eventbrite's category API are cached in-memory using MemCachier, since the categories are unlikely to change and the data is used on every page.
+Requests to Eventbrite's category API are cached in-memory using Memcached, since the categories are unlikely to change and the data is used on every page.
 
 Another solution would be to store the categories in a local database and sync the database with the eventbrite catagory API periodically using a Cron job. However, I wanted to limit the project to pure Django and Cron jobs have to be configered externally.
 
@@ -18,4 +18,4 @@ Static files are served using dj-static. Django sends the static files to the `s
 - Django (+ extensions)
 - Requests
 - ConfigObj
-- MemCachier
+- Memcached/MemCachier
