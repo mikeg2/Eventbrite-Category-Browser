@@ -7,7 +7,7 @@ from configobj import ConfigObj
 import os
 
 BROWSER_VIEW_CONFIG_URL = os.path.join(BASE_DIR, 'event_browser/event_browser.cfg')
-config = ConfigObj(BROWSER_VIEW_CONFIG_URL)['views']
+CONFIG = ConfigObj(BROWSER_VIEW_CONFIG_URL)['views']
 
 def category(request):
     context = {
@@ -18,7 +18,7 @@ def category(request):
         context_for_category_list(request, context)
         context_for_eventlist_search(request, context)
     except FailedApiRequest:
-        messages.add_message(request, messages.ERROR, config['eventbrite_api_error_message'])
+        messages.add_message(request, messages.ERROR, CONFIG['eventbrite_api_error_message'])
         return render(request, TEMPLATE_URL, context, status=500)
     return render(request, TEMPLATE_URL, context)
 

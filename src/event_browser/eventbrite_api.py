@@ -7,7 +7,7 @@ from django.core.cache import cache
 import os
 
 EVENTBRITE_API_CONFIG_URL = os.path.join(BASE_DIR, 'event_browser/event_browser.cfg')
-config = ConfigObj(EVENTBRITE_API_CONFIG_URL)['eventbrite']
+CONFIG = ConfigObj(EVENTBRITE_API_CONFIG_URL)['eventbrite']
 
 #--- General Fetching ---
 
@@ -16,7 +16,7 @@ def fetch(truncated_url, opt={}):
     return get_json(api_full_url, opt)
 
 # inj parameter added to allow for testing
-def full_url(truncated_url, inj=config):
+def full_url(truncated_url, inj=CONFIG):
     token = inj['eventbrite_api_token']
     base_url = inj['eventbrite_base_url']
     complete_url = urlparse.urljoin(base_url, truncated_url)
@@ -43,7 +43,7 @@ def get_json(api_full_url, opt):
         cache.set(cache_key, result)
     return result
 
-# Not intelligent enough to recognize for get params in different orders
+# Not intelligent enough to create same key for urls with get params in different order
 def get_request_key(url):
     return 'get ' + url
 
@@ -67,7 +67,7 @@ class FailedApiRequest(Exception):
 #--- Specific Requests ---
 
 def fetch_categories(page_number=1, cached=False):
-    trunc_url = config['categories_truncated_url']
+    trunc_url = CONFIG['categories_truncated_url']
     return fetch(trunc_url, {
             'params': {
                 'page': page_number
@@ -93,7 +93,7 @@ def fetch_all_categories(cached=False):
     return all_cat
 
 def fetch_events_by_category(categories, page_number=1, range_end_time=None):
-    search_url = config['event_search_truncated_url']
+    search_url = CONFIG['event_search_truncated_url']
     str_categories = [str(cat) for cat in categories]
     return fetch(search_url, {
         'params': {
